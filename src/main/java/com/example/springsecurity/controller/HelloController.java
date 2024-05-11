@@ -1,6 +1,7 @@
 package com.example.springsecurity.controller;
 
 import com.example.springsecurity.entity.User;
+import com.example.springsecurity.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,9 @@ public class HelloController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtService jwtService;
 
     @GetMapping("/hello")
     public String hello(HttpServletRequest request) {
@@ -41,7 +45,7 @@ public class HelloController {
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
             );
             if(authentication.isAuthenticated()) {
-                return "User logged in";
+                return jwtService.getJwtToken(user.getUsername());
             } else {
                 return "User not logged in";
             }
