@@ -2,12 +2,10 @@ package com.example.springsecurity.controller;
 
 import com.example.springsecurity.entity.User;
 import com.example.springsecurity.service.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +20,15 @@ public class HelloController {
     @Autowired
     private JwtService jwtService;
 
-    @GetMapping("/hello")
-    public String hello(HttpServletRequest request) {
-        return "Hello World" + request.getSession().getId();
-    }
 
     @GetMapping("/about")
     public String about() {
         return "Welcome to about";
+    }
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Welcome to hello";
     }
 
     @GetMapping("/register")
@@ -38,19 +37,52 @@ public class HelloController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user){
+    public String login(@RequestBody User user) {
 
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
             );
-            if(authentication.isAuthenticated()) {
-                return jwtService.getJwtToken(user.getUsername());
-            } else {
-                return "User not logged in";
+            if (authentication.isAuthenticated()) {
+                return jwtService.generateToken(user.getUsername());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return "Invalid username or password";
         }
+        return "User not logged in";
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @PostMapping("/login")
+//    public String login(@RequestBody User user){
+//
+//        try {
+//            Authentication authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+//            );
+//            if(authentication.isAuthenticated()) {
+//                return "User logged in";
+//            } else {
+//                return "User not logged in";
+//            }
+//        } catch (Exception e){
+//            return "Invalid username or password";
+//        }
+//    }
 }
